@@ -1,0 +1,35 @@
+// Custom Scrollbar
+.ps__thumb-y {
+  background-color: #dfe0e5;
+  border-radius: 4px;
+  width: 5px;
+}
+
+.ps__rail-y {
+  width: 12px;
+}
+
+.ps__rail-y:hover > .ps__thumb-y {
+  background-color: #aaa;
+  width: 8px;
+}
+
+// Ultility CSS Classes
+.text-primary {
+  color: $color-primary !important;
+}
+
+.text-red,
+.text-error {
+  color: $color-red;
+  font-size: 14px;
+
+  @include media-breakpoint-up(lg) {
+    font-size: 16px;
+  }
+}
+
+.balance-btn {
+    cursor: pointer;
+    color: #4b8aff !important;
+}
