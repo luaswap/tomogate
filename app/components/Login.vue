@@ -1,6 +1,6 @@
 <template>
     <div
-        class="container">
+        class="">
         <div
             class="main-page-login">
             <h2 class="tmp-title-large">Unlock your wallet</h2>
@@ -255,20 +255,249 @@
 </template>
 
 <script>
+import Web3 from 'web3'
+import { validationMixin } from 'vuelidate'
+import { required, minLength } from 'vuelidate/lib/validators'
+import { HDWalletProvider } from '../../helpers/mnenonic'
+import PrivateKeyProvider from 'truffle-privatekey-provider'
+import store from 'store'
+const defaultWalletNumber = 10
 export default {
     name: 'App',
     components: {
     },
+    mixins: [validationMixin],
     data () {
         return {
+            tabIndex: 0,
+            loading: false,
+            hdWallets: {},
+            privateKey: '',
+            mnemonic: '',
+            provider: '',
+            config: {},
+            hdPath: "m/44'/889'/0'/0"
+        }
+    },
+    validations: {
+        networks: {
+            // custom: {
+            //     required,
+            //     localhostUrl
+            // }
+        },
+        mnemonic: {
+            required
+        },
+        hdPath: {
+            required,
+            minLength: minLength(12)
+        }
+    },
+    computed: {
+        mobileCheck: () => {
+            const isAndroid = navigator.userAgent.match(/Android/i)
+            const isIOS = navigator.userAgent.match(/iPhone|iPad|iPod/i)
+            return (isAndroid || isIOS)
         }
     },
     async updated () {
     },
     destroyed () { },
     created: async function () {
+        const self = this
+        self.hdWallets = self.hdWallets || {}
+        self.config = store.get('configBridge') || await self.appConfig()
     },
     methods: {
+        async login () {
+            const self = this
+            try {
+                self.loading = true
+                let wjs = false
+                let walletProvider
+                let offset
+                let blockchain = self.config.blockchain
+                switch (self.provider) {
+                case 'metamask':
+                    if (window.web3) {
+                        walletProvider = window.web3.currentProvider
+                        wjs = new Web3(walletProvider)
+                    }
+                    break
+                case 'pantograph':
+                    if (window.tomoWeb3) {
+                        walletProvider = window.tomoWeb3.currentProvider
+                        wjs = new Web3(walletProvider)
+                    }
+                    break
+                case 'ledger':
+                    // Object - HttpProvider
+                    wjs = new Web3(new Web3.providers.HttpProvider(blockchain.rpc))
+                    // Object - IpcProvider: The IPC provider is used node.js dapps when running a local node
+                    // import net from 'net'
+                    // wjs = new Web3(new Web3.providers.IpcProvider('~/.ethereum/geth.ipc', net))
+
+                    // Object - WebsocketProvider: The Websocket provider is the standard for usage in legacy browsers.
+                    // wjs = await ws.connect(self.networks.wss)
+                    // wjs = new Web3(new Web3.providers.WebsocketProvider(self.chainConfig.ws))
+                    // web3 version 0.2 haven't supported WebsocketProvider yet. (for web@1.0 only)
+                    offset = document.querySelector('input[name="hdWallet"]:checked').value.toString()
+                    store.set('hdDerivationPath', self.hdPath + '/' + offset)
+                    break
+                case 'trezor':
+                    wjs = new Web3(new Web3.providers.HttpProvider(blockchain.rpc))
+                    offset = document.querySelector('input[name="hdWallet"]:checked').value.toString()
+                    store.set('hdDerivationPath', self.hdPath + '/' + offset)
+                    store.set('offset', offset)
+                    break
+                case 'custom':
+                    self.mnemonic = self.mnemonic.trim()
+                    walletProvider = (self.mnemonic.indexOf(' ') >= 0)
+                        ? new HDWalletProvider(
+                            self.mnemonic,
+                            blockchain.rpc, 0, 1, self.hdPath)
+                        : new PrivateKeyProvider(self.mnemonic, blockchain.rpc)
+                    wjs = new Web3(walletProvider)
+                    break
+                default:
+                    break
+                }
+                self.setupProvider(self.provider, wjs)
+                self.address = await self.getAccount()
+
+                if (self.address) {
+                    self.$store.state.address = self.address.toLowerCase()
+                    if (self.provider === 'metamask' || self.provider === 'pantograph') {
+                        this.setStorage(
+                            'account',
+                            {
+                                address: self.address,
+                                network: self.provider
+                            }
+                        )
+                    }
+                    self.$bus.$emit('logged', 'user logged')
+                    if (store.get('redirectTo')) {
+                        const redirectTo = store.get('redirectTo')
+                        store.remove('redirectTo')
+                        self.$router.push({
+                            path: '/' + redirectTo
+                        })
+                    } else {
+                        self.$router.push({
+                            path: '/'
+                        })
+                    }
+                } else {
+                    self.$toasted.show(
+                        'Couldn\'t get any accounts! Make sure ' +
+                        'your Ethereum client is configured correctly.', {
+                            type : 'error'
+                        })
+                }
+                self.loading = false
+            } catch (error) {
+                self.loading = false
+                self.$toasted.show(
+                    error, { type : 'error' }
+                )
+            }
+        },
+        validate: function () {
+            const tabIndex = this.tabIndex
+            if (tabIndex === 1) {
+                this.provider = 'metamask'
+                this.login()
+            }
+
+            if (tabIndex === 0) {
+                this.provider = 'pantograph'
+                this.login()
+            }
+
+            this.$v.$touch()
+            // ledger
+            if (tabIndex === 2 && !this.$v.hdPath.$invalid) {
+                this.provider = 'ledger'
+                this.selectHdPath()
+            }
+            // trezor
+            if (tabIndex === 3) {
+                this.hdPath = "m/44'/60'/0'/0"
+                this.provider = 'trezor'
+                this.selectHdPath()
+            }
+            if ((tabIndex === 4 || tabIndex === 5) && !this.$v.mnemonic.$invalid) {
+                this.provider = 'custom'
+                this.login()
+            }
+        },
+        selectHdPath: async function (offset = 0, limit = defaultWalletNumber) {
+            let self = this
+            let wallets
+            try {
+                self.loading = true
+                const tabIndex = self.tabIndex
+                store.set('hdDerivationPath', self.hdPath)
+                if (tabIndex === 3 || this.provider === 'trezor') {
+                    await self.unlockTrezor()
+                    wallets = await self.loadTrezorWallets(offset, limit)
+                } else {
+                    await self.unlockLedger()
+                    wallets = await self.loadMultipleLedgerWallets(offset, limit)
+                }
+                if (Object.keys(wallets).length > 0) {
+                    Object.assign(self.hdWallets, self.hdWallets, wallets)
+                    // document.getElementById('hdwalletModal').style.display = 'block'
+                    this.$refs.hdwalletModal.show()
+                    self.loading = false
+                }
+            } catch (error) {
+                console.log(error.message)
+                self.loading = false
+                self.$toasted.show(error.message || error, {
+                    type : 'error'
+                })
+            }
+        },
+        closeModal () {
+            document.getElementById('hdwalletModal').style.display = 'none'
+        },
+        changeView () {
+            if (this.mobileCheck) {
+                window.scrollTo(0, 160)
+            }
+        },
+        async setHdPath () {
+            this.$refs.hdwalletModal.hide()
+            await this.login()
+        },
+        async moreHdAddresses () {
+            document.getElementById('moreHdAddresses').style.cursor = 'wait'
+            document.body.style.cursor = 'wait'
+            await this.selectHdPath(Object.keys(this.hdWallets).length, this.defaultWalletNumber)
+            document.getElementById('moreHdAddresses').style.cursor = 'pointer'
+            document.body.style.cursor = 'default'
+        },
+        async onChangeSelect (event) {
+            switch (event) {
+            case 'trezor':
+                this.hdPath = "m/44'/60'/0'/0"
+                break
+            case 'ledger':
+                this.hdPath = "m/44'/889'/0'/0"
+                break
+            default:
+                // if (this.interval) {
+                //     clearInterval(this.interval)
+                // }
+                break
+            }
+        },
+        changePath (path) {
+            this.hdPath = path
+        }
     }
 }
 </script>

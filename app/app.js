@@ -16,6 +16,8 @@ import Web3 from 'web3'
 import TransactionTx from 'ethereumjs-tx'
 import * as localStorage from 'store'
 import TrezorConnect from 'trezor-connect'
+import _get from 'lodash.get'
+import _omit from 'lodash.omit'
 
 import Home from './components/Home.vue'
 import Login from './components/Login.vue'
@@ -46,10 +48,10 @@ const store = new Vuex.Store({
 })
 
 // set up trezor's manifest
-// TrezorConnect.manifest({
-//     email: 'admin@tomochain.com',
-//     appUrl: 'https://bridge.tomochain.com'
-// })
+TrezorConnect.manifest({
+    email: 'admin@tomochain.com',
+    appUrl: 'https://bridge.tomochain.com'
+})
 
 Vue.prototype.setupProvider = async function (provider, wjs) {
     Vue.prototype.NetworkProvider = provider
@@ -329,6 +331,16 @@ Vue.prototype.detectNetwork = async function (provider) {
                     wjs = new Web3(p)
                 }
                 break
+            case 'pantograph':
+                if (window.tomoWeb3) {
+                    if (window.tomoWeb3.currentProvider) {
+                        let pp = window.tomoWeb3.currentProvider
+                        wjs = new Web3(pp)
+                    } else {
+                        wjs = window.tomoWeb3
+                    }
+                }
+                break
             case 'trezor':
             case 'ledger':
                 if (provider === 'ledger') {
@@ -352,17 +364,25 @@ Vue.prototype.detectNetwork = async function (provider) {
     }
 }
 
-Vue.prototype.changeTokenName = function (token) {
-    return token.replace('TOMO', 'TRC21 ')
+Vue.prototype.setStorage = (key, object) => {
+    sessionStorage.setItem(
+        'global',
+        JSON.stringify({
+            ...JSON.parse(sessionStorage.getItem('global')),
+            [key]: object
+        })
+    )
 }
 
-Vue.prototype.string2byte = function (str) {
-    let byteArray = []
-    for (let j = 0; j < str.length; j++) {
-        byteArray.push(str.charCodeAt(j))
-    }
+Vue.prototype.getStorage = key => {
+    return _get(JSON.parse(sessionStorage.getItem('global')), [key])
+}
 
-    return byteArray
+Vue.prototype.removeStorage = key => {
+    sessionStorage.setItem(
+        'global',
+        JSON.stringify(_omit(JSON.parse(sessionStorage.getItem('global')), key))
+    )
 }
 
 Vue.prototype.serializeQuery = function (params, prefix) {
@@ -398,12 +418,22 @@ Vue.prototype.truncate = function (fullStr, strLen) {
        fullStr.substr(fullStr.length - backChars)
 }
 
+Vue.prototype.getCurrencySymbol = function () {
+    return 'TOMO'
+}
+
 const router = new VueRouter({
     mode: 'history',
     routes: [
         { path: '/', component: Home },
         { path: '/login', component: Login }
     ]
+})
+
+router.beforeEach(async (to, from, next) => {
+    const provider = Vue.prototype.NetworkProvider || (Vue.prototype.getStorage('account') || {}).network || null
+    await Vue.prototype.detectNetwork(provider)
+    next()
 })
 
 const EventBus = new Vue()
