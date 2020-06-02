@@ -21,6 +21,8 @@ import _omit from 'lodash.omit'
 
 import Home from './components/Home.vue'
 import Login from './components/Login.vue'
+import Project from './components/Project.vue'
+import Dashboard from './components/Dashboard.vue'
 
 Vue.use(VueClipboard)
 Vue.use(BootstrapVue)
@@ -426,7 +428,9 @@ const router = new VueRouter({
     mode: 'history',
     routes: [
         { path: '/', component: Home },
-        { path: '/login', component: Login }
+        { path: '/login', component: Login },
+        { path: '/projects/:projectId', component: Project },
+        { path: '/projects', component: Dashboard }
     ]
 })
 

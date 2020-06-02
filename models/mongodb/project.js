@@ -9,7 +9,7 @@ var Project = new Schema({
         type: String,
         index: true
     }],
-    Status: {
+    status: {
         type: String,
         index: true
     },

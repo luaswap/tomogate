@@ -1,0 +1,27 @@
+.mw-10 {
+    max-width: 1.5rem;
+}
+.card {
+    
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    color: #333;
+    height: 96px;
+    margin-bottom: 1.5rem !important;
+    &:hover {
+        box-shadow: 0 5px 20px rgba(0,0,0,.07);
+    }
+
+    &:last-child {
+        margin-bottom: 0 !important;
+    }
+}
+.card-column {
+    // align-items: center !important;
+    align-self: center !important;
+}
+.has-hover {
+    cursor: pointer;
+    transition: all .2s ease-in;
+}

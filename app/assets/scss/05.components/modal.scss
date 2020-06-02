@@ -1,0 +1,22 @@
+.modal-buttons {
+    .btn {
+        max-width: 120px;
+        width: calc(50% - 20px);
+    }
+
+    @include media-breakpoint-up(md) {
+        .btn {
+        font-size: $global-font-size-md;
+        }
+    }
+
+    @include media-breakpoint-up(xl) {
+        .btn {
+        font-size: $global-font-size-xl;
+        }
+    }
+}
+
+.modal-backdrop {
+    background-color: rgba(255,107,74,.9);
+}

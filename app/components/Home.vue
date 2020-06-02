@@ -44,6 +44,11 @@ export default {
             this.account = storage.address ||
                 this.$store.state.address || await this.getAccount()
         }
+        if (this.account) {
+            this.$router.push({
+                path: '/projects'
+            })
+        }
     },
     methods: {
     }
