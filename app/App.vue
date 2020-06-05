@@ -8,7 +8,9 @@
                 variant="dark"
                 type="dark"
                 class="tb_navbar">
-                <b-navbar-brand to="/">
+                <b-navbar-brand
+                    to="/"
+                    class="ml-3">
                     <img
                         src="/app/assets/images/logo3.svg"
                         alt="TomoBridge" >
@@ -53,7 +55,7 @@
                 class="side-nav">
                 <b-nav
                     vertical
-                    class="bg-warn">
+                    class="bg-warn text-center">
                     <b-nav-item
                         to="/projects"
                         active-class="bg-selected">
@@ -62,7 +64,7 @@
                 </b-nav>
                 <b-nav
                     vertical
-                    class="mt-auto">
+                    class="mt-auto text-center">
                     <b-nav-item
                         to="/docs"
                         active-class="bg-selected">Docs</b-nav-item>

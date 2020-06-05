@@ -69,7 +69,7 @@ router.post('/new-project', [
 
             contracts = [...new Set(array)]
         }
-        await db.Project.updateOne({
+        const result = await db.Project.updateOne({
             owner,
             name: projectName
         }, {
@@ -80,6 +80,7 @@ router.post('/new-project', [
         }, { upsert: true })
 
         return res.json({
+            id: result.upserted[0]._id,
             owner,
             name: projectName,
             smartContractAddresses: contracts,

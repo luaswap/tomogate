@@ -11,17 +11,22 @@
     flex-direction: column;
     height: 100vh;
     left: 0;
-    min-width: 6rem;
+    width: 6rem;
+    overflow: hidden;
     position: fixed;
     top: 0;
     z-index: 30;
-    font-size: 14px;
+    font-size: 0.75rem;
     color: #ffffff;
     padding-top: 60px;
     padding-bottom: 25px;
     z-index: 9999;
     a {
-        color: #ffffff;
+        color: #242828;
+        text-transform: uppercase;
+    }
+    .nav-link {
+        padding: 0.5rem;
     }
 }
 

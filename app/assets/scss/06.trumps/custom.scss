@@ -33,3 +33,9 @@
     cursor: pointer;
     color: #4b8aff !important;
 }
+
+@media screen and (min-width: 992px) {
+  .container {
+      max-width: 80%;
+  }
+}

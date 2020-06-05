@@ -1,0 +1,6 @@
+body {
+    @include fsz(14);
+	background-color: #ffffff;
+	color: $color-text-default;
+    font-family: $font-quicksand;
+}

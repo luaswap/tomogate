@@ -36,7 +36,7 @@
                             <b-row class="mb-3">
                                 <b-col>
                                     <div>PROJECT ID</div>
-                                    <div>1</div>
+                                    <div>{{ project.id }}</div>
                                 </b-col>
                                 <b-col>
                                     <div>
@@ -63,8 +63,8 @@
                             </p>
                             <div class="d-flex justify-content-start">
                                 <b-button
-                                    type="submit"
-                                    variant="danger">DELETE PROJECT</b-button>
+                                    variant="danger"
+                                    @click="confirmDelete">DELETE PROJECT</b-button>
                             </div>
                         </b-card>
                     </div>
@@ -74,6 +74,16 @@
                 <div class="container">FUCK YOU</div>
             </b-tab>
         </b-tabs>
+        <b-modal
+            id="deleteProjectModal"
+            ref="deleteProjectModal"
+            title="DELETE PROJECT"
+            centered
+            scrollable
+            size="md"
+            hide-footer>
+            <DeleteProjectModal :parent="this" />
+        </b-modal>
     </div>
 </template>
 
@@ -82,15 +92,23 @@ import { validationMixin } from 'vuelidate'
 import {
     required
 } from 'vuelidate/lib/validators'
+import axios from 'axios'
+import moment from 'moment'
+
+import DeleteProjectModal from './modals/DeleteProjectModal.vue'
+
 export default {
     name: 'App',
     components: {
+        DeleteProjectModal
     },
     mixins: [validationMixin],
     data () {
         return {
             projectId: this.$route.params.projectId,
-            projectName: ''
+            address: this.$store.state.address || '',
+            projectName: '',
+            project: {}
         }
     },
     validations: {
@@ -102,8 +120,31 @@ export default {
     },
     destroyed () { },
     created: async function () {
+        await this.getProject()
     },
     methods: {
+        async getProject () {
+            const response = await axios.get(`/api/projects/get-project/${this.address}?id=${this.projectId}`)
+            if (response.data && response.data.items) {
+                response.data.items.map(p => {
+                    this.projectName = p.name
+                    this.project = {
+                        name: p.name,
+                        status: p.status,
+                        createdAt: moment(p.createdAt).format('DD MMMM YYYY'),
+                        id: p._id,
+                        requestToday: 0,
+                        totalRequests: 1000
+                    }
+                })
+            }
+        },
+        confirmDelete () {
+            this.$refs.deleteProjectModal.show()
+        },
+        deleteProject () {
+
+        }
     }
 }
 </script>

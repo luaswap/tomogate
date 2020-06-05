@@ -32,6 +32,7 @@ import { validationMixin } from 'vuelidate'
 import {
     required
 } from 'vuelidate/lib/validators'
+import axios from 'axios'
 export default {
     name: 'App',
     components: {},
@@ -44,6 +45,7 @@ export default {
     },
     data () {
         return {
+            address: this.$store.state.address || '',
             projectName: ''
         }
     },
@@ -68,6 +70,31 @@ export default {
             parent.$refs.newProjectModal.hide()
         },
         async createProject () {
+            const parent = this.parent
+            axios.post(
+                '/api/projects/new-project',
+                {
+                    name: this.projectName,
+                    owner: this.address,
+                    watchContracts: []
+                }
+            ).then(async response => {
+                if (response.data && response.data.name) {
+                    this.$toasted.show('Created', { position: 'top-center', type: 'default' })
+                    parent.$refs.newProjectModal.hide()
+                    parent.getProjects()
+                }
+            }).catch(error => {
+                if (error.response && error.response.data) {
+                    const err = error.response.data.error || {}
+                    this.$toasted.show(err.message ? err.message : err, { position: 'top-center', type: 'error' })
+                } else {
+                    this.$toasted.show('Something went wrong', { type: 'error' })
+                }
+            })
+        },
+        fake () {
+            this.$toasted.show('Created', { position: 'top-center', type: 'default' })
         }
     }
 }

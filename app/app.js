@@ -37,7 +37,8 @@ Vue.use(Toasted, {
         onClick : (e, toastObject) => {
             toastObject.goAway(0)
         }
-    }
+    },
+    singleton: true
 })
 
 const store = new Vuex.Store({
