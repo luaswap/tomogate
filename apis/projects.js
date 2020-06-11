@@ -94,17 +94,19 @@ router.post('/new-project', [
 router.post('/update-project', [
     check('id'),
     check('name').exists().withMessage("'name' is required"),
-    check('watchContracts').exists().withMessage("'watchContracts' is required")
+    check('newName').exists().withMessage("'newName' is required"),
+    check('watchContracts').optional()
 ], async function (req, res, next) {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
         return next(errors.array())
     }
     try {
-        const projectName = req.body.name
-        const watchContracts = req.body.watchContracts
+        const projectName = req.body.name || ''
+        const newName = req.body.newName || ''
+        const watchContracts = req.body.watchContracts || []
         const owner = (req.body.owner || '').toLowerCase()
-        const id = req.body.id
+        // const id = req.body.id
 
         let contracts = []
         if (Array.isArray(watchContracts)) {
@@ -115,18 +117,18 @@ router.post('/update-project', [
             contracts = [...new Set(contracts.concat(array))]
         }
         await db.Project.updateOne({
-            _id: id,
             owner,
             name: projectName
         }, {
-            owner,
-            name: projectName,
-            smartContractAddresses: contracts
+            $set: {
+                name: newName,
+                smartContractAddresses: contracts
+            }
         }, { upsert: false })
 
         return res.json({
             owner,
-            name: projectName,
+            name: newName,
             smartContractAddresses: contracts
         })
     } catch (error) {

@@ -1,37 +1,37 @@
 <template>
-    <div class="mt-3">
+    <div class="mt-3 site-wrapper has-side-nav d-flex">
         <b-tabs
-            content-class="mt-3">
+            content-class="">
             <b-tab
                 title="Setting"
                 active>
                 <div class="px-5 pt-4 container">
                     <div>
-                        <header class="mb-3">PROJECT DETAILS</header>
+                        <header
+                            class="project-header mb-3">PROJECT DETAILS</header>
                         <b-card class="h-100">
-                            <b-form>
-                                <b-form-group
-                                    class=""
-                                    label="Name">
-                                    <b-form-input
-                                        v-model="projectName"
-                                        placeholder="Project name"
-                                        type="text"/>
-                                    <div
-                                        v-if="$v.projectName.$dirty && !$v.projectName.required"
-                                        class="text-error pt-2">Required field</div>
-                                </b-form-group>
-                            </b-form>
+                            <b-form-group
+                                class=""
+                                label="Name">
+                                <b-form-input
+                                    v-model="projectName"
+                                    placeholder="Project name"
+                                    type="text"/>
+                                <div
+                                    v-if="updateNameError"
+                                    class="text-error pt-2">{{ updateNameError }}</div>
+                            </b-form-group>
                             <div class="d-flex justify-content-start pt-3">
                                 <b-button
-                                    type="submit"
-                                    variant="primary">SAVE CHANGES</b-button>
+                                    variant="primary"
+                                    @click="updateName">SAVE CHANGES</b-button>
                             </div>
                         </b-card>
                     </div>
 
                     <div>
-                        <header class="mt-4 mb-3">KEYS</header>
+                        <header
+                            class="project-header mt-4 mb-3">KEYS</header>
                         <b-card class="h-100">
                             <b-row class="mb-3">
                                 <b-col>
@@ -56,7 +56,8 @@
                     </div>
 
                     <div>
-                        <header class="mt-4 mb-3">DELETE PROJECT</header>
+                        <header
+                            class="project-header mt-4 mb-3">DELETE PROJECT</header>
                         <b-card class="h-100">
                             <p>
                                 Any applications using this project’s keys will no longer be able to access the Infura API. This can not be undone.
@@ -71,7 +72,7 @@
                 </div>
             </b-tab>
             <b-tab title="???">
-                <div class="container">FUCK YOU</div>
+                <div class="container">Looking for tab 2 ?</div>
             </b-tab>
         </b-tabs>
         <b-modal
@@ -108,7 +109,8 @@ export default {
             projectId: this.$route.params.projectId,
             address: this.$store.state.address || '',
             projectName: '',
-            project: {}
+            project: {},
+            updateNameError: ''
         }
     },
     validations: {
@@ -120,7 +122,11 @@ export default {
     },
     destroyed () { },
     created: async function () {
-        await this.getProject()
+        if (this.address) {
+            await this.getProject()
+        } else {
+            this.$router.push({ path: '/' })
+        }
     },
     methods: {
         async getProject () {
@@ -142,8 +148,30 @@ export default {
         confirmDelete () {
             this.$refs.deleteProjectModal.show()
         },
-        deleteProject () {
-
+        async updateName () {
+            if (!this.projectName) {
+                this.updateNameError = 'Required field'
+            } else {
+                axios.post(
+                    '/api/projects/update-project',
+                    {
+                        owner: this.address,
+                        id: this.projectId,
+                        name: this.project.name,
+                        newName: this.projectName
+                    }
+                ).then(response => {
+                    if (response.data && response.data.name === this.projectName) {
+                        this.updateNameError = ''
+                        this.$toasted.show('Updated project', { position: 'top-center', type: 'success' })
+                    }
+                }).catch(error => {
+                    if (error.response) {
+                        const data = error.response.data || {}
+                        this.updateNameError = data.error ? data.error.message : data.error
+                    }
+                })
+            }
         }
     }
 }

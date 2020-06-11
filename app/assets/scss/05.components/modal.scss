@@ -17,6 +17,80 @@
     }
 }
 
-.modal-backdrop {
-    background-color: rgba(255,107,74,.9);
+// .modal-backdrop {
+//     background-color: rgba(255,107,74,.9);
+// }
+
+// Modal
+.modal-dialog.modal-md {
+    max-width: 580px;
+}
+.modal-content {
+    border-radius: $boderradius-default;
+}
+
+.tomo-modal-default {
+    padding: 1em 0;
+    @include media-breakpoint-up(lg) {
+        padding: 1em;
+    }
+    text-align: center;
+    .msg-txt {
+        @include fsz(18);
+        i {
+            @include fsz-cha(50,40,40);
+            color: $color-text-blue;
+        }
+        h4 {
+            @include fsz(18);
+            margin: 15px 0;
+            font-family: $font-quicksand;
+        }
+        p {
+            margin-bottom: .5em;
+        }
+    }
+    .btn-box {
+        padding-bottom: 0;
+    }
+    &.icon-violet {
+        .msg-txt {
+            i {
+                color: $color-text-violet;
+            }
+        }
+    }
+}
+
+.tmp-table-two {
+	label {
+		color: $color-link-default;
+		width: 100%;
+		span {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			display: block;
+			margin-top: 2px;
+		}
+	}
+	th,
+	td {
+		&:first-child {
+			padding-left: 0;
+		}
+		&:last-child{
+			text-align: right;
+			padding-right: 0;
+		}
+	}
+	&.colum-2 {
+		tr {
+			display: grid;
+			grid-template-columns: 72% 28%;
+			@include media-breakpoint-down(md) {
+				grid-template-columns: 65% 35%;
+			}
+		}
+	}
 }

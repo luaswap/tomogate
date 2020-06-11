@@ -39,3 +39,19 @@
       max-width: 80%;
   }
 }
+
+.btn-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  padding: 1em 0;
+  margin: 0 -10px;
+  a,
+  button {
+      margin: 10px 10px 0;
+      @include media-breakpoint-down(sm) {
+          margin: 10px 5px 0;
+      }
+  }
+}

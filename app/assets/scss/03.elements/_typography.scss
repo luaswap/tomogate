@@ -1,0 +1,18 @@
+.tmp-title-large {
+	@include fsz-cha(28,24,24);
+	font-family: $font-baijam;
+	color: $color-text-default;
+	font-weight: 650;
+	&.oranges {
+		color: $color-text-oranges;
+	}
+	&.blue {
+		color: $color-text-blue;
+	}
+	&.violet {
+		color: $color-text-violet;
+	}
+	&.yellow {
+		color: $color-text-yellow;
+	}
+}

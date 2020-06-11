@@ -7,8 +7,16 @@ const express = require('express')
 const router = express.Router()
 
 router.get('/get-message', [
-], async function () {
+], async function () { })
 
+router.post('/send-signed-messasge', [
+
+], async function (req, res, next) {
+    try {
+        console.log('leu leu')
+    } catch (error) {
+        return next(error)
+    }
 })
 
 module.exports = router

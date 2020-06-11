@@ -1,6 +1,6 @@
 <template>
-    <div class="pt-4 container">
-        <div class="">
+    <div class="pt-4 site-wrapper has-side-nav d-flex">
+        <div class="container">
             <header
                 class="d-flex justify-content-between pb-4 align-items-center">
                 <h5 class="d-flex">PROJECTS</h5>
@@ -105,7 +105,11 @@ export default {
     },
     destroyed () { },
     created: async function () {
-        await this.getProjects()
+        if (this.address) {
+            await this.getProjects()
+        } else {
+            this.$router.push({ path: '/' })
+        }
     },
     methods: {
         async getProjects () {

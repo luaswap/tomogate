@@ -312,6 +312,41 @@ Vue.prototype.sendSignedTransaction = function (txParams, signature) {
     })
 }
 
+Vue.prototype.signMessage = async function (message) {
+    try {
+        const path = localStorage.get('hdDerivationPath')
+        const provider = Vue.prototype.NetworkProvider
+        let result
+        switch (provider) {
+        case 'ledger':
+            const signature = await Vue.prototype.appEth.signPersonalMessage(
+                path,
+                Buffer.from(message).toString('hex')
+            )
+            let v = signature['v'] - 27
+            v = v.toString(16)
+            if (v.length < 2) {
+                v = '0' + v
+            }
+            result = '0x' + signature['r'] + signature['s'] + v
+            break
+        case 'trezor':
+            const sig = await TrezorConnect.ethereumSignMessage({
+                path,
+                message
+            })
+            result = '0x' + sig.payload.signature || ''
+            break
+        default:
+            break
+        }
+        return result
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}
+
 const getConfig = Vue.prototype.appConfig = async function () {
     let config = await axios.get('/api/config')
     config.data.objSwapCoin = {}

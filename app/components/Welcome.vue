@@ -1,13 +1,14 @@
 <template>
-    <div class="page-welcome">
-        <div class="container">
+    <div
+        class="site-wrapper justify-content-center">
+        <div class="text-center">
             <div class="step-login">
                 <b-img
                     src="../app/assets/images/logo-pc.svg"
                     alt="logo tomoissuer"
-                    class="mb-5 tomo-logo"/>
+                    class="mb-3 tomo-logo"/>
                 <h2 class="tmp-title-big">TomoBridge</h2>
-                <div class="btn-box">
+                <div class="btn-box mt-3">
                     <b-button
                         :to="'/login'"
                         class="tmp-btn-blue">
@@ -20,7 +21,6 @@
 </template>
 
 <script>
-import store from 'store'
 
 export default {
     name: 'App',
@@ -37,13 +37,6 @@ export default {
     beforeDestroy () {},
     created: async function () {},
     mounted () {},
-    methods: {
-        redirectTo (page) {
-            store.set('redirectTo', page)
-            this.$router.push({
-                path: '/login'
-            })
-        }
-    }
+    methods: { }
 }
 </script>

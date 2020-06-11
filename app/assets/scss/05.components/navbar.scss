@@ -1,8 +1,13 @@
 .tb_navbar {
     width: calc(100% - 6rem);
-    background-color: red;
     margin-left: auto;
 }
+
+.tb_navbar_noaccount {
+    width: 100% !important;
+    margin-left: 0;
+}
+
 .side-nav {
     align-items: center;
     background-color: #ff6b4a;
@@ -27,6 +32,7 @@
     }
     .nav-link {
         padding: 0.5rem;
+        font-weight: bold;
     }
 }
 

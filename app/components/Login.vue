@@ -1,11 +1,11 @@
 <template>
     <div
-        class="">
+        class="site-wrapper container mt-5">
         <div
             class="main-page-login">
             <h2 class="tmp-title-large">Unlock your wallet</h2>
             <p>Start by choosing the wallet you would like to unlock</p>
-            <div class="content-page">
+            <div class="content-page mt-3">
                 <b-form
                     class="form-login"
                     novalidate
@@ -276,7 +276,8 @@ export default {
             mnemonic: '',
             provider: '',
             config: {},
-            hdPath: "m/44'/889'/0'/0"
+            hdPath: "m/44'/889'/0'/0",
+            message: 'ha ha ha ha ha'
         }
     },
     validations: {
@@ -365,6 +366,8 @@ export default {
                 }
                 self.setupProvider(self.provider, wjs)
                 self.address = await self.getAccount()
+                const signHash = await this.getSignHash()
+                console.log(signHash)
 
                 if (self.address) {
                     self.$store.state.address = self.address.toLowerCase()
@@ -378,17 +381,9 @@ export default {
                         )
                     }
                     self.$bus.$emit('logged', 'user logged')
-                    if (store.get('redirectTo')) {
-                        const redirectTo = store.get('redirectTo')
-                        store.remove('redirectTo')
-                        self.$router.push({
-                            path: '/' + redirectTo
-                        })
-                    } else {
-                        self.$router.push({
-                            path: '/'
-                        })
-                    }
+                    self.$router.push({
+                        path: '/'
+                    })
                 } else {
                     self.$toasted.show(
                         'Couldn\'t get any accounts! Make sure ' +
@@ -449,7 +444,6 @@ export default {
                 }
                 if (Object.keys(wallets).length > 0) {
                     Object.assign(self.hdWallets, self.hdWallets, wallets)
-                    // document.getElementById('hdwalletModal').style.display = 'block'
                     this.$refs.hdwalletModal.show()
                     self.loading = false
                 }
@@ -497,6 +491,36 @@ export default {
         },
         changePath (path) {
             this.hdPath = path
+        },
+        async getSignHash () {
+            let signHash
+            let self = this
+            try {
+                switch (this.provider) {
+                case 'custom':
+                    signHash = await self.web3.eth.sign(self.message, self.address)
+                    break
+                case 'metamask':
+                case 'pantograph':
+                    signHash = await self.web3.eth.personal.sign(self.message, self.address, '')
+                    break
+                case 'trezor':
+                case 'ledger':
+                    signHash = await self.signMessage(self.message)
+                    break
+                default:
+                    self.$toasted.show(`An error occurred while signing in.`, {
+                        type: 'error'
+                    })
+                    break
+                }
+                return signHash
+            } catch (error) {
+                console.log(error)
+                self.$toasted.show(`An error occurred while siging in.`, {
+                    type: 'error'
+                })
+            }
         }
     }
 }

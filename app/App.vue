@@ -3,16 +3,16 @@
         <div class="page-layout">
             <b-navbar
                 v-if="account"
+                class="tb_navbar"
                 sticky
                 toggleable="md"
-                variant="dark"
-                type="dark"
-                class="tb_navbar">
+                variant="light"
+                type="light">
                 <b-navbar-brand
                     to="/"
                     class="ml-3">
                     <img
-                        src="/app/assets/images/logo3.svg"
+                        src="/app/assets/images/logo.svg"
                         alt="TomoBridge" >
                 </b-navbar-brand>
                 <b-navbar-toggle target="nav-collapse">
@@ -24,7 +24,7 @@
                     <b-navbar-nav class="ml-auto navbar-buttons ">
                         <b-nav-item-dropdown
                             v-if="isTomonet"
-                            class="tmp-btn-transparent tomo-wallet"
+                            class="tmp-btn-transparent tomo-wallet font-weight-bold"
                             offset="25"
                             right>
                             <template
@@ -76,8 +76,8 @@
                         active-class="bg-selected">Support</b-nav-item>
                 </b-nav>
             </div>
-            <div class="site-wrapper has-side-nav">
-                <router-view class="w-100" />
+            <div class="">
+                <router-view class="" />
             </div>
         </div>
     </div>
