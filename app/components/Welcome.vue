@@ -11,7 +11,7 @@
                 <div class="btn-box mt-3">
                     <b-button
                         :to="'/login'"
-                        class="tmp-btn-blue">
+                        class="tmp-btn-orange">
                         Login
                     </b-button>
                 </div>

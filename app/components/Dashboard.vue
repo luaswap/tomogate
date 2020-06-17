@@ -7,8 +7,7 @@
                 <div class="d-flex align-items-center">
                     <span class="h-100 pr-5">3/3 PROJECTS</span>
                     <b-button
-                        class=""
-                        variant="success"
+                        class="tmp-btn-orange"
                         @click="createProject">
                         CREATE NEW PROJECT
                     </b-button>

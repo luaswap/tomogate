@@ -23,7 +23,7 @@
                             </b-form-group>
                             <div class="d-flex justify-content-start pt-3">
                                 <b-button
-                                    variant="primary"
+                                    class="tmp-btn-orange"
                                     @click="updateName">SAVE CHANGES</b-button>
                             </div>
                         </b-card>
@@ -64,7 +64,7 @@
                             </p>
                             <div class="d-flex justify-content-start">
                                 <b-button
-                                    variant="danger"
+                                    class="tmp-btn-red"
                                     @click="confirmDelete">DELETE PROJECT</b-button>
                             </div>
                         </b-card>

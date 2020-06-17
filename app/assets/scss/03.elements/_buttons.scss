@@ -1,18 +1,19 @@
 button,
-.btn {
-  border: none;
-  border-radius: 4px;
-  display: inline-block;
-  font-size: 15px;
-  font-weight: 600;
-  padding: 12px;
-  text-align: center;
+input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+	@include fsz(14);
+	border: 0px;
+	border-radius: 50%;
+	padding: .6em 1em;
 
-  &:active,
-  &:focus {
-    box-shadow: none !important;
-    outline: none !important;
-  }
+	&:active,
+	&:focus {
+		outline: none;
+	}
+}
+button {
+    overflow: hidden;
 }
 
 button.btn--big,
@@ -45,4 +46,178 @@ button.btn--big,
     background-color: $color-primary;
     color: #fff;
   }
+}
+
+.tmp-btn-orange {
+  a {
+      @include transition;
+      color: $color-text-white!important;
+      background: $background-orange;
+      border: 2px solid $background-orange;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: .3em 1.2em!important;
+      i {
+          padding-right: 5px;
+          font-weight: bold;
+      }
+      &:hover,
+      &:active {
+        background: $background-orange-active;
+      }
+  }
+}
+
+.tmp-btn-red {
+  a {
+      @include transition;
+      color: $color-text-white!important;
+      background: $background-red;
+      border: 2px solid $background-red;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: .3em 1.2em!important;
+      i {
+          padding-right: 5px;
+          font-weight: bold;
+      }
+      &:hover,
+      &:active {
+        background: $background-red-active;
+      }
+  }
+}
+
+a,
+button,
+input {
+    &.tmp-btn-orange {
+        @include transition;
+        background: $background-orange;
+        border: 2px solid $background-orange;
+        color: $color-text-white!important;
+        border-radius: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: .3em 1.2em!important;
+        font-weight: 500;
+        min-width: 220px;
+        @include media-breakpoint-down(sm) {
+            min-width: 180px;
+        }
+        @include fsz(18);
+        &.btn-min {
+            min-width: 100px;
+        }
+        i {
+            padding-right: 5px;
+            font-weight: bold;
+        }
+        &:hover,
+        .active {
+          background: $background-orange-active;
+          border: 2px solid;
+        }
+    }
+    &.tmp-btn-boder-orange {
+        @include transition;
+        background: transparent;
+        background: $background-orange;
+        border: 2px solid $background-orange;
+        color: $color-text-blue!important;
+        border-radius: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: .3em 1.2em!important;
+        font-weight: 500;
+        min-width: 220px;
+        @include media-breakpoint-down(sm) {
+            min-width: 180px;
+        }
+        @include fsz(18);
+        &.btn-min {
+            min-width: 100px;
+        }
+        i {
+            padding-right: 5px;
+            font-weight: bold;
+        }
+        &:hover,
+        .active {
+          background: $background-orange-active;
+          border: 2px solid $background-orange;
+          color: $color-text-white!important;
+        }
+    }
+}
+
+a,
+button,
+input {
+    &.tmp-btn-red {
+        @include transition;
+        background: $background-red;
+        border: 2px solid $background-red;
+        color: $color-text-white!important;
+        border-radius: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: .3em 1.2em!important;
+        font-weight: 500;
+        min-width: 220px;
+        @include media-breakpoint-down(sm) {
+            min-width: 180px;
+        }
+        @include fsz(18);
+        &.btn-min {
+            min-width: 100px;
+        }
+        i {
+            padding-right: 5px;
+            font-weight: bold;
+        }
+        &:hover,
+        .active {
+          background: $background-red-active;
+          border: 2px solid;
+        }
+    }
+    &.tmp-btn-boder-red {
+        @include transition;
+        background: transparent;
+        background: $background-red;
+        border: 2px solid $background-red;
+        color: $color-text-blue!important;
+        border-radius: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: .3em 1.2em!important;
+        font-weight: 500;
+        min-width: 220px;
+        @include media-breakpoint-down(sm) {
+            min-width: 180px;
+        }
+        @include fsz(18);
+        &.btn-min {
+            min-width: 100px;
+        }
+        i {
+            padding-right: 5px;
+            font-weight: bold;
+        }
+        &:hover,
+        .active {
+          background: $background-red-active;
+          border: 2px solid $background-red;
+          color: $color-text-white!important;
+        }
+    }
 }

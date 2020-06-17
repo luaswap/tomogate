@@ -22,7 +22,7 @@
                             <div class="inner-content tab-pantograph">
                                 <div class="btn-box">
                                     <b-button
-                                        class="tmp-btn-blue"
+                                        class="tmp-btn-orange"
                                         type="submit">
                                         Unlock
                                     </b-button>
@@ -41,7 +41,7 @@
                             <div class="inner-content tab-tomowallet">
                                 <div class="btn-box">
                                     <b-button
-                                        class="tmp-btn-blue"
+                                        class="tmp-btn-orange"
                                         @click="loginWallet">
                                         Unlock
                                     </b-button>
@@ -59,7 +59,7 @@
                             <div class="inner-content tab-metamask">
                                 <div class="btn-box">
                                     <b-button
-                                        class="tmp-btn-blue"
+                                        class="tmp-btn-orange"
                                         type="submit">
                                         Unlock
                                     </b-button>
@@ -105,7 +105,7 @@
                                     </b-form-group>
                                     <div class="btn-box">
                                         <b-button
-                                            class="tmp-btn-blue"
+                                            class="tmp-btn-orange"
                                             type="submit">
                                             Connect
                                         </b-button>
@@ -127,7 +127,7 @@
                                 </p>
                                 <div class="btn-box">
                                     <b-button
-                                        class="tmp-btn-blue"
+                                        class="tmp-btn-orange"
                                         type="submit">Connect</b-button>
                                 </div>
                             </div>
@@ -153,7 +153,7 @@
                                 </b-form-group>
                                 <div class="btn-box">
                                     <b-button
-                                        class="tmp-btn-blue"
+                                        class="tmp-btn-orange"
                                         type="submit">Unlock</b-button>
                                 </div>
                             </div>
@@ -202,7 +202,7 @@
                                 </b-form-group>
                                 <div class="btn-box">
                                     <b-button
-                                        class="tmp-btn-blue"
+                                        class="tmp-btn-orange"
                                         type="submit">Unlock</b-button>
                                 </div>
                             </div>
@@ -243,7 +243,7 @@
                 </div>
                 <div class="btn-box">
                     <b-button
-                        class="tmp-btn-blue"
+                        class="tmp-btn-orange"
                         @click="setHdPath">Unlock
                     </b-button>
                 </div>
