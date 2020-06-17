@@ -261,6 +261,7 @@ import { required, minLength } from 'vuelidate/lib/validators'
 import { HDWalletProvider } from '../../helpers/mnenonic'
 import PrivateKeyProvider from 'truffle-privatekey-provider'
 import store from 'store'
+import axios from 'axios'
 const defaultWalletNumber = 10
 export default {
     name: 'App',
@@ -367,6 +368,7 @@ export default {
                 self.setupProvider(self.provider, wjs)
                 self.address = await self.getAccount()
                 const signHash = await this.getSignHash()
+
                 console.log(signHash)
 
                 if (self.address) {
@@ -493,8 +495,9 @@ export default {
             this.hdPath = path
         },
         async getSignHash () {
+            const self = this
             let signHash
-            let self = this
+            self.message = (await axios.get(`/api/login/getMessage?address=${self.address}`) || {}).token
             try {
                 switch (this.provider) {
                 case 'custom':

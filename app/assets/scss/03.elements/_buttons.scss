@@ -124,10 +124,9 @@ input {
           border: 2px solid;
         }
     }
-    &.tmp-btn-boder-orange {
+    &.tmp-btn-border-orange {
         @include transition;
         background: transparent;
-        background: $background-orange;
         border: 2px solid $background-orange;
         color: $color-text-blue!important;
         border-radius: 30px;
@@ -189,10 +188,9 @@ input {
           border: 2px solid;
         }
     }
-    &.tmp-btn-boder-red {
+    &.tmp-btn-border-red {
         @include transition;
         background: transparent;
-        background: $background-red;
         border: 2px solid $background-red;
         color: $color-text-blue!important;
         border-radius: 30px;

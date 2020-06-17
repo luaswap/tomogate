@@ -17,11 +17,11 @@
             </b-form-group>
             <div class="modal-buttons d-flex justify-content-end pt-3">
                 <b-button
-                    class="mr-4"
+                    class="mr-4 tmp-btn-border-orange"
                     @click="closeModal">Cancel</b-button>
                 <b-button
                     type="submit"
-                    variant="primary">Confirm</b-button>
+                    class="tmp-btn-orange">Confirm</b-button>
             </div>
         </b-form>
     </div>

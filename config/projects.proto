@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package bridge.v1;
+
+option go_package = "gateway";
+
+message Project {
+	string id = 1;
+	string name = 2;
+	string user = 3;
+	Keys keys = 4;
+	Addresses addresses = 5;
+	Security security = 6;
+}
+
+message CreateRequest {
+	string name = 1;
+}
+
+message Keys {
+	string    id = 1;
+	string secret = 2;
+}
+
+message Security {
+	repeated string    white_list_domains = 1;
+	repeated string white_list_ips = 2;
+}
+
+message Addresses {
+	string    wrap_to_address = 1;
+	string 	  minting_address = 2;
+}
+
+message CreateResponse {
+	string id = 1;
+	string name = 2;
+	string user = 3;
+	Keys keys = 4;
+}
+
+message ListRequest {
+}
+
+message ListResponse {
+	repeated Project projects = 1;
+}
+
+message UpdateRequest {
+	string id = 1;
+	string name = 2;
+	Addresses addresses = 3;
+	Security security = 4;
+}
+
+message UpdateResponse {
+	bool success = 1;
+}
+
+message DeleteRequest {
+	string id = 1;
+}
+
+message DeleteResponse {
+	bool success = 1;
+}
+
+service ProjectService {
+  rpc Create(CreateRequest) returns (CreateResponse) {};
+  
+  rpc List(ListRequest) returns (ListResponse) {};
+
+  rpc Update(UpdateRequest) returns (UpdateResponse) {};
+
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {};
+}

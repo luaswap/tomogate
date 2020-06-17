@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package bridge.v1;
+
+option go_package = "gateway";
+
+message RequestTokenRequest {
+  string address = 1;
+}
+
+message RequestTokenResponse { string token = 1; }
+
+message AuthServiceLoginRequest {
+  string address = 1;
+  string token = 2;
+  string signature = 3;
+}
+
+message AuthServiceLoginResponse { string access_token = 1; }
+
+service AuthService {
+  rpc RequestToken(RequestTokenRequest) returns (RequestTokenResponse) {};
+
+  rpc Login(AuthServiceLoginRequest) returns (AuthServiceLoginResponse) {};
+}
