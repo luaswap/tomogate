@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package bridge.v1;
+package gateway.v1;
 
 option go_package = "gateway";
 
@@ -11,6 +11,7 @@ message Project {
 	Keys keys = 4;
 	Addresses addresses = 5;
 	Security security = 6;
+	Notification notification = 7;
 }
 
 message CreateRequest {
@@ -28,8 +29,13 @@ message Security {
 }
 
 message Addresses {
-	string    wrap_to_address = 1;
-	string 	  minting_address = 2;
+	string 	  minting_address = 1;
+	repeated string watch_smart_contracts = 2;
+}
+
+message Notification {
+	string web_hook = 1;
+	repeated string emails = 2;
 }
 
 message CreateResponse {
@@ -51,6 +57,8 @@ message UpdateRequest {
 	string name = 2;
 	Addresses addresses = 3;
 	Security security = 4;
+	Notification notification = 5;
+	bool status = 6;
 }
 
 message UpdateResponse {

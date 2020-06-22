@@ -497,7 +497,11 @@ export default {
         async getSignHash () {
             const self = this
             let signHash
-            self.message = (await axios.get(`/api/login/getMessage?address=${self.address}`) || {}).token
+            const response = await axios.get(`/api/login/getMessage?address=${self.address}`)
+
+            if (response && response.data && response.data.token) {
+                self.message = response.data.token
+            }
             try {
                 switch (this.provider) {
                 case 'custom':

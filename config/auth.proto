@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package bridge.v1;
+package gateway.v1;
 
 option go_package = "gateway";
 
