@@ -108,7 +108,6 @@ export default {
         }
     },
     async updated () {
-        await this.checkNetworkAndLogin()
     },
     destroyed () { },
     created: async function () {

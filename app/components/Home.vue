@@ -43,6 +43,7 @@ export default {
             const storage = this.getStorage('account') || {}
             this.account = storage.address ||
                 this.$store.state.address || await this.getAccount()
+            this.$store.state.address = this.account
         }
         if (this.account) {
             this.$router.push({

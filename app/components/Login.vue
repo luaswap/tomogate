@@ -367,35 +367,46 @@ export default {
                 }
                 self.setupProvider(self.provider, wjs)
                 self.address = await self.getAccount()
-                const signHash = await this.getSignHash()
+                let signHash = await this.getSignHash()
+                let signature
 
-                console.log(signHash)
+                if (signHash) {
+                    signature = await axios.post(
+                        '/api/login/sendSignedMessage',
+                        {
+                            address: self.address,
+                            token: self.message,
+                            signature: signHash
+                        }
+                    )
 
-                if (self.address) {
-                    self.$store.state.address = self.address.toLowerCase()
-                    if (self.provider === 'metamask' || self.provider === 'pantograph') {
-                        this.setStorage(
-                            'account',
-                            {
-                                address: self.address,
-                                network: self.provider
-                            }
-                        )
-                    }
-                    self.$bus.$emit('logged', 'user logged')
-                    self.$router.push({
-                        path: '/'
-                    })
-                } else {
-                    self.$toasted.show(
-                        'Couldn\'t get any accounts! Make sure ' +
-                        'your Ethereum client is configured correctly.', {
-                            type : 'error'
+                    if (self.address && signature.data === 'OK') {
+                        self.$store.state.address = self.address.toLowerCase()
+                        if (self.provider === 'metamask' || self.provider === 'pantograph') {
+                            this.setStorage(
+                                'account',
+                                {
+                                    address: self.address,
+                                    network: self.provider
+                                }
+                            )
+                        }
+                        self.$bus.$emit('logged', 'user logged')
+                        self.$router.push({
+                            path: '/'
                         })
+                    } else {
+                        self.$toasted.show(
+                            'Couldn\'t get any accounts! Make sure ' +
+                            'your Ethereum client is configured correctly.', {
+                                type : 'error'
+                            })
+                    }
                 }
                 self.loading = false
             } catch (error) {
                 self.loading = false
+                console.log(error)
                 self.$toasted.show(
                     error, { type : 'error' }
                 )
@@ -497,15 +508,15 @@ export default {
         async getSignHash () {
             const self = this
             let signHash
-            const response = await axios.get(`/api/login/getMessage?address=${self.address}`)
-
-            if (response && response.data && response.data.token) {
-                self.message = response.data.token
-            }
             try {
+                const response = await axios.get(`/api/login/getMessage?address=${self.address}`)
+
+                if (response && response.data && response.data.token) {
+                    self.message = response.data.token
+                }
                 switch (this.provider) {
                 case 'custom':
-                    signHash = await self.web3.eth.sign(self.message, self.address)
+                    signHash = await self.web3.eth.personal.sign(self.message, self.address, '')
                     break
                 case 'metamask':
                 case 'pantograph':
@@ -516,15 +527,12 @@ export default {
                     signHash = await self.signMessage(self.message)
                     break
                 default:
-                    self.$toasted.show(`An error occurred while signing in.`, {
-                        type: 'error'
-                    })
                     break
                 }
                 return signHash
             } catch (error) {
                 console.log(error)
-                self.$toasted.show(`An error occurred while siging in.`, {
+                self.$toasted.show(`An error occurred while siging in, ${error}`, {
                     type: 'error'
                 })
             }

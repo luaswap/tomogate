@@ -70,7 +70,7 @@ export default {
     },
     data () {
         return {
-            address: this.$store.state.address || '',
+            address: '',
             data: []
             // data: [
             //     {
@@ -104,6 +104,9 @@ export default {
     },
     destroyed () { },
     created: async function () {
+        const storage = this.getStorage('account') || {}
+
+        this.address = storage.address || this.$store.state.address || await this.getAccount()
         if (this.address) {
             await this.getProjects()
         } else {

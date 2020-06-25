@@ -1,11 +1,42 @@
 const path = require('path')
-const GRPCClient = require('node-grpc-client')
+const grpc = require('grpc')
+const protoLoader = require('@grpc/proto-loader')
 const config = require('config')
 const AUTH_PROTO_PATH = path.resolve(__dirname, '../config/auth.proto')
 const PROJECT_PROTO_PATH = path.resolve(__dirname, '../config/projects.proto')
 
-const authAPI = new GRPCClient(AUTH_PROTO_PATH, 'gateway.v1', 'AuthService', config.get('serverAPI'))
+const packageDefinitionAuth = protoLoader.loadSync(
+    AUTH_PROTO_PATH,
+    {
+        keepCase: true,
+        longs: String,
+        enums: String,
+        arrays: true
+    }
+)
 
-const projectAPI = new GRPCClient(PROJECT_PROTO_PATH, 'gateway.v1', 'ProjectService', config.get('serverAPI'))
+const packageDefinitionProject = protoLoader.loadSync(
+    PROJECT_PROTO_PATH,
+    {
+        keepCase: true,
+        longs: String,
+        enums: String,
+        arrays: true
+    }
+)
+
+const GRPCAuth = grpc.loadPackageDefinition(packageDefinitionAuth).gateway.v1
+
+const GRPCProject = grpc.loadPackageDefinition(packageDefinitionProject).gateway.v1
+
+const authAPI = new GRPCAuth.AuthService(
+    config.get('serverAPI'),
+    grpc.credentials.createInsecure()
+)
+
+const projectAPI = new GRPCProject.ProjectService(
+    config.get('serverAPI'),
+    grpc.credentials.createInsecure()
+)
 
 module.exports = { authAPI, projectAPI }
