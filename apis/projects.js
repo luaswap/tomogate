@@ -2,10 +2,10 @@
 const express = require('express')
 const router = express.Router()
 const db = require('../models/mongodb')
-// const config = require('config')
-// const urljoin = require('url-join')
-// const axios = require('axios')
 const { check, validationResult, query } = require('express-validator/check')
+const server = require('../helpers/grpc')
+const grpc = require('grpc')
+const grpcError = require('@stackpath/node-grpc-error-details')
 
 router.get('/get-project/:owner', [
     query('id'),
@@ -19,22 +19,24 @@ router.get('/get-project/:owner', [
     }
     try {
         const owner = (req.params.owner || '').toLowerCase()
-        let limit = (req.query.limit) ? parseInt(req.query.limit) : 100
-        let skip = (req.query.page) ? limit * (req.query.page - 1) : 0
-        const total = db.Project.countDocuments({
-            owner
+        // let limit = (req.query.limit) ? parseInt(req.query.limit) : 100
+        // let skip = (req.query.page) ? limit * (req.query.page - 1) : 0
+        const account = await db.Account.findOne({
+            address: owner.toLowerCase()
         })
-        let query = { owner }
-        if (req.query.id) {
-            query._id = req.query.id
-            skip = 0
-            limit = 0
-        }
-        const data = await db.Project.find(query).limit(limit).skip(skip).lean().exec()
 
-        return res.json({
-            items: data,
-            total: await total
+        const metadata = new grpc.Metadata()
+        metadata.add('Authorization', `Bearer ${account.jwt}`)
+        server.projectAPI.List({ access_token: account.jwt }, metadata, (err, response) => {
+            if (err) {
+                const error = grpcError.deserializeGoogleGrpcStatusDetails(err)
+                if (!error) {
+                    return next(new Error(error.details))
+                } else {
+                    return next(new Error(error.details[0].array))
+                }
+            }
+            return res.send(response)
         })
     } catch (error) {
         return next(error)
@@ -43,7 +45,7 @@ router.get('/get-project/:owner', [
 
 router.post('/new-project', [
     check('name').exists().withMessage("'name' is required"),
-    check('watchContracts').exists().withMessage("'watchContracts' is required"),
+    // check('watchContracts').exists().withMessage("'watchContracts' is required"),
     check('owner').exists().isLength({ min: 42, max: 42 }).withMessage("'owner' is required")
 ], async function (req, res, next) {
     const errors = validationResult(req)
@@ -52,40 +54,29 @@ router.post('/new-project', [
     }
     try {
         const projectName = req.body.name
-        const watchContracts = req.body.watchContracts
         const owner = (req.body.owner || '').toLowerCase()
-        const checkProject = await db.Project.findOne({
-            owner,
-            name: projectName
+        const account = await db.Account.findOne({
+            address: owner.toLowerCase()
         })
-        if (checkProject) {
-            return next(new Error('Project name is already existed'))
-        }
-        let contracts = []
-        if (Array.isArray(watchContracts)) {
-            contracts = [...new Set(watchContracts)]
-        } else {
-            const array = watchContracts.replace(/\s+/g, '').split(',')
-
-            contracts = [...new Set(array)]
-        }
-        const result = await db.Project.updateOne({
-            owner,
-            name: projectName
-        }, {
-            owner,
-            name: projectName,
-            smartContractAddresses: contracts,
-            status: true
-        }, { upsert: true })
-
-        return res.json({
-            id: result.upserted[0]._id,
-            owner,
-            name: projectName,
-            smartContractAddresses: contracts,
-            status: true
-        })
+        const metadata = new grpc.Metadata()
+        metadata.add('Authorization', `Bearer ${account.jwt}`)
+        server.projectAPI.Create(
+            {
+                name: projectName
+            },
+            metadata,
+            async (err, response) => {
+                if (err) {
+                    const error = grpcError.deserializeGoogleGrpcStatusDetails(err)
+                    if (!error) {
+                        return next(new Error(error.details))
+                    } else {
+                        return next(new Error(error.details[0].array))
+                    }
+                }
+                return res.send(response)
+            }
+        )
     } catch (error) {
         return next(error)
     }
@@ -159,6 +150,32 @@ router.post('/delete-project', [
             owner
         })
         return res.send(result)
+    } catch (error) {
+        return next(error)
+    }
+})
+
+router.get('/getList/:address', async (req, res, next) => {
+    try {
+        const address = req.params.address
+        const account = await db.Account.findOne({
+            address: address.toLowerCase()
+        })
+        console.log(account)
+        const metadata = new grpc.Metadata()
+        metadata.add('Authorization', `Bearer ${account.jwt}`)
+        server.projectAPI.List({ access_token: account.jwt }, metadata, (err, response) => {
+            if (err) {
+                const error = grpcError.deserializeGoogleGrpcStatusDetails(err)
+                if (!error) {
+                    return next(new Error(error.details))
+                } else {
+                    return next(new Error(error.details[0].array))
+                }
+            }
+            console.log(response)
+            return res.send(response)
+        })
     } catch (error) {
         return next(error)
     }

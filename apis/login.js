@@ -42,13 +42,13 @@ router.post('/sendSignedMessage', [], async function (req, res, next) {
     }
     try {
         const address = req.body.address
-        const token = req.body.token
+        const message = req.body.message
         const signature = req.body.signature
 
         server.authAPI.Login(
             {
                 address,
-                token,
+                message,
                 signature
             }, async (err, response) => {
                 if (err) {

@@ -375,7 +375,7 @@ export default {
                         '/api/login/sendSignedMessage',
                         {
                             address: self.address,
-                            token: self.message,
+                            message: self.message,
                             signature: signHash
                         }
                     )
@@ -511,8 +511,8 @@ export default {
             try {
                 const response = await axios.get(`/api/login/getMessage?address=${self.address}`)
 
-                if (response && response.data && response.data.token) {
-                    self.message = response.data.token
+                if (response && response.data && response.data.message) {
+                    self.message = response.data.message
                 }
                 switch (this.provider) {
                 case 'custom':

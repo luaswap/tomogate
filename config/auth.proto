@@ -8,11 +8,11 @@ message RequestTokenRequest {
   string address = 1;
 }
 
-message RequestTokenResponse { string token = 1; }
+message RequestTokenResponse { string message = 1; }
 
 message AuthServiceLoginRequest {
   string address = 1;
-  string token = 2;
+  string message = 2;
   string signature = 3;
 }
 

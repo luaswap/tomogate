@@ -3,6 +3,7 @@ syntax = "proto3";
 package gateway.v1;
 
 option go_package = "gateway";
+import "google/protobuf/timestamp.proto";
 
 message Project {
 	string id = 1;
@@ -12,6 +13,8 @@ message Project {
 	Addresses addresses = 5;
 	Security security = 6;
 	Notification notification = 7;
+	int64 created_at = 8;
+	int64 updated_at = 9;
 }
 
 message CreateRequest {
@@ -73,6 +76,14 @@ message DeleteResponse {
 	bool success = 1;
 }
 
+message GetOneRequest {
+	string id = 1;
+}
+
+message GetOneResponse {
+	Project project = 1;
+}
+
 service ProjectService {
   rpc Create(CreateRequest) returns (CreateResponse) {};
   
@@ -81,4 +92,6 @@ service ProjectService {
   rpc Update(UpdateRequest) returns (UpdateResponse) {};
 
   rpc Delete(DeleteRequest) returns (DeleteResponse) {};
+
+  rpc GetOne(GetOneRequest) returns (GetOneResponse) {};
 }

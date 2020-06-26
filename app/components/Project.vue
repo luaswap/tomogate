@@ -57,6 +57,32 @@
 
                     <div>
                         <header
+                            class="project-header mt-4 mb-3">SECURITY</header>
+                        <b-card class="h-100">
+                            <b-row class="mb-3">
+                                <b-col>
+                                    <div>PROJECT ID</div>
+                                    <div>{{ project.id }}</div>
+                                </b-col>
+                                <b-col>
+                                    <div>
+                                        PROJECT SECRET
+                                    </div>
+                                    <div>123</div>
+                                </b-col>
+                            </b-row>
+                            <b-row>
+                                <b-col>
+                                    <div>ENDPOINTS</div>
+                                    <div>https://</div>
+                                    <div>wss://</div>
+                                </b-col>
+                            </b-row>
+                        </b-card>
+                    </div>
+
+                    <div>
+                        <header
                             class="project-header mt-4 mb-3">DELETE PROJECT</header>
                         <b-card class="h-100">
                             <p>

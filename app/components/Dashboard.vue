@@ -118,13 +118,13 @@ export default {
             try {
                 const response = await axios.get(`/api/projects/get-project/${this.address}`)
                 let items = []
-                if (response.data && response.data.items) {
-                    response.data.items.map(p => {
+                if (response.data && response.data.projects) {
+                    response.data.projects.map(p => {
                         items.push({
                             name: p.name,
                             status: p.status,
-                            createdAt: moment(p.createdAt).format('DD MMMM YYYY'),
-                            id: p._id,
+                            createdAt: moment(p.created_at).format('DD MMMM YYYY'),
+                            id: p.keys.id,
                             requestToday: 0,
                             totalRequests: 1000
                         })
