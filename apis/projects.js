@@ -161,7 +161,7 @@ router.get('/getList/:address', async (req, res, next) => {
         const account = await db.Account.findOne({
             address: address.toLowerCase()
         })
-        console.log(account)
+
         const metadata = new grpc.Metadata()
         metadata.add('Authorization', `Bearer ${account.jwt}`)
         server.projectAPI.List({ access_token: account.jwt }, metadata, (err, response) => {
@@ -173,7 +173,7 @@ router.get('/getList/:address', async (req, res, next) => {
                     return next(new Error(error.details[0].array))
                 }
             }
-            console.log(response)
+
             return res.send(response)
         })
     } catch (error) {

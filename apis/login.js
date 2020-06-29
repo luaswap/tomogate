@@ -59,7 +59,6 @@ router.post('/sendSignedMessage', [], async function (req, res, next) {
                         return next(new Error(error.details[0].array))
                     }
                 } else {
-                    console.log(response)
                     // store jwt
                     await db.Account.findOneAndUpdate({
                         address: address.toLowerCase()

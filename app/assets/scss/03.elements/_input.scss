@@ -1,9 +1,24 @@
 input[type='text'],
-input[type='password'] {
+input[type='email'],
+input[type='url'],
+input[type='password'],
+input[type='search'],
+input[type='number'],
+input[type='tel'],
+input[type='range'],
+input[type='date'],
+input[type='month'],
+input[type='week'],
+input[type='time'],
+input[type='datetime'],
+input[type='datetime-local'],
+input[type='color'] {
   background-color: $color-bg;
   border: none;
-  border-radius: 4px;
-  font-size: 15px;
+  display: block;
+  border-radius: $boderradius-default;
+  padding: .8em 1em;
+  @include fsz(16);
   height: auto;
 
   @extend %transition;
@@ -31,6 +46,84 @@ input[type='password'] {
   &::placeholder {
     color: $color-text;
     opacity: .2;
+  }
+}
+
+.form-text {
+  color: $color-text-default!important;
+  margin-top: 10px;
+  // text-align: right;
+  @include media-breakpoint-down(md){
+      text-align: left;
+  }
+  @include media-breakpoint-down(sm) {
+      max-width: 70%;
+  }
+}
+
+.form-group {
+  margin-bottom: 1.5em!important;
+  @include media-breakpoint-down(md){
+      margin-bottom: 0.5em!important;
+  }
+  label {
+      @include fsz(16);
+      font-family: $font-quicksand;
+      color: $color-text-default;
+      margin-bottom: 20px;
+      min-width: 100px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      i {
+          font-size: 12px;
+          // color: $color-text-oranges;
+          // color: red($color: #000000);
+          margin-left: 5px;
+      }
+      .tooltip-fixed {
+          position: absolute;
+          right: -5px;
+          top: 48px;
+          padding: 5px;
+      }
+  }
+  div {
+      position: relative;
+      .txt-fixed {
+          // background: $background-white;
+          background: transparent;
+          position: absolute;
+          right: 10px;
+          top: 7px;
+          padding: 5px;
+      }
+
+      .txt-fixed-behind {
+          background: $background-white;
+          position: absolute;
+          right: 5px;
+          top: 7px;
+          padding: 5px;
+          @include media-breakpoint-down (sm) {
+              right: 5px;
+          }
+      }
+      .txt-fixed-description {
+          position: absolute;
+          right: -5px;
+          top: 48px;
+          padding: 5px;
+      }
+      .button-fixed {
+          position: absolute;
+          right: -45px;
+          top: -6px;
+          padding: 5px;
+      }
+       button {
+           @include fsz(16);
+       }
   }
 }
 .hd-path {

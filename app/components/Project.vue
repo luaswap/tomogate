@@ -59,25 +59,31 @@
                         <header
                             class="project-header mt-4 mb-3">SECURITY</header>
                         <b-card class="h-100">
-                            <b-row class="mb-3">
-                                <b-col>
-                                    <div>PROJECT ID</div>
-                                    <div>{{ project.id }}</div>
-                                </b-col>
-                                <b-col>
-                                    <div>
-                                        PROJECT SECRET
-                                    </div>
-                                    <div>123</div>
-                                </b-col>
-                            </b-row>
-                            <b-row>
-                                <b-col>
-                                    <div>ENDPOINTS</div>
-                                    <div>https://</div>
-                                    <div>wss://</div>
-                                </b-col>
-                            </b-row>
+                            <span>ALLOWLIST CONTRACT ADDRESSES <i class="tb-info" /></span>
+                            <b-form-group>
+                                <b-input-group
+                                    size="md"
+                                    class="mt-3"
+                                    label="Name">
+                                    <b-form-input
+                                        v-model="contractAddress"
+                                        placeholder="Allow address"
+                                        type="text"/>
+                                    <b-input-group-append>
+                                        <b-button variant="outline-success">Add</b-button>
+                                    </b-input-group-append>
+                                    <div
+                                        v-if="updateNameError"
+                                        class="text-error pt-2">{{ updateNameError }}</div>
+                                </b-input-group>
+                            </b-form-group>
+                            <li
+                                v-for="(item, index) in project.contractAddresses"
+                                :key="index"
+                                class="d-flex pt-1 align-items-center justify-content-between">
+                                <div>{{ item }}</div>
+                                <b-button variant="link">REMOVE</b-button>
+                            </li>
                         </b-card>
                     </div>
 
@@ -136,7 +142,8 @@ export default {
             address: '',
             projectName: '',
             project: {},
-            updateNameError: ''
+            updateNameError: '',
+            contractAddress: ''
         }
     },
     validations: {
@@ -159,20 +166,38 @@ export default {
     },
     methods: {
         async getProject () {
-            const response = await axios.get(`/api/projects/get-project/${this.address}?id=${this.projectId}`)
-            if (response.data && response.data.items) {
-                response.data.items.map(p => {
-                    this.projectName = p.name
-                    this.project = {
-                        name: p.name,
-                        status: p.status,
-                        createdAt: moment(p.createdAt).format('DD MMMM YYYY'),
-                        id: p._id,
-                        requestToday: 0,
-                        totalRequests: 1000
-                    }
-                })
+            // const response = await axios.get(`/api/projects/get-project/${this.address}?id=${this.projectId}`)
+            this.projectName = 'test'
+            this.project = {
+                name: 'test',
+                status: true,
+                createdAt: moment(new Date()).format('DD MMMM YYYY'),
+                id: '123',
+                requestToday: 0,
+                totalRequests: 1000,
+                contractAddresses: [
+                    '1',
+                    '2'
+                ]
             }
+            // if (response.data && response.data.items) {
+            //     response.data.items.map(p => {
+            //         console.log(p)
+            //         this.projectName = p.name
+            //         this.project = {
+            //             name: p.name,
+            //             status: p.status,
+            //             createdAt: moment(p.createdAt).format('DD MMMM YYYY'),
+            //             id: p._id,
+            //             requestToday: 0,
+            //             totalRequests: 1000,
+            //             contractAddresses: [
+            //                 '1',
+            //                 '2'
+            //             ]
+            //         }
+            //     })
+            // }
         },
         confirmDelete () {
             this.$refs.deleteProjectModal.show()

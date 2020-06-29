@@ -123,7 +123,7 @@ export default {
                         items.push({
                             name: p.name,
                             status: p.status,
-                            createdAt: moment(p.created_at).format('DD MMMM YYYY'),
+                            createdAt: moment(p.created_at).format('DD MMM YYYY'),
                             id: p.keys.id,
                             requestToday: 0,
                             totalRequests: 1000
