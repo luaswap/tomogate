@@ -124,7 +124,7 @@ export default {
                             name: p.name,
                             status: p.status,
                             createdAt: moment(p.created_at).format('DD MMM YYYY'),
-                            id: p.keys.id,
+                            id: p.id,
                             requestToday: 0,
                             totalRequests: 1000
                         })

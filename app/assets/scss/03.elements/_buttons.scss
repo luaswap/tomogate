@@ -219,3 +219,7 @@ input {
         }
     }
 }
+
+.remove-btn {
+  @include fsz(15);
+}

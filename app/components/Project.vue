@@ -42,7 +42,7 @@
                                     <div>
                                         PROJECT SECRET
                                     </div>
-                                    <div>123</div>
+                                    <div>{{ project.secret }}</div>
                                 </b-col>
                             </b-row>
                             <b-row>
@@ -70,19 +70,24 @@
                                         placeholder="Allow address"
                                         type="text"/>
                                     <b-input-group-append>
-                                        <b-button variant="outline-success">Add</b-button>
+                                        <b-button
+                                            variant="outline-primary"
+                                            @click="updateContractAddress">Add</b-button>
                                     </b-input-group-append>
-                                    <div
-                                        v-if="updateNameError"
-                                        class="text-error pt-2">{{ updateNameError }}</div>
                                 </b-input-group>
+                                <div
+                                    v-if="updateContractError"
+                                    class="text-error pt-2">{{ updateContractError }}</div>
                             </b-form-group>
                             <li
                                 v-for="(item, index) in project.contractAddresses"
                                 :key="index"
-                                class="d-flex pt-1 align-items-center justify-content-between">
+                                class="d-flex pt-1 align-items-center justify-content-between ">
                                 <div>{{ item }}</div>
-                                <b-button variant="link">REMOVE</b-button>
+                                <b-button
+                                    variant="link"
+                                    class="remove-btn"
+                                    @click="removeContractAddress(index)">REMOVE</b-button>
                             </li>
                         </b-card>
                     </div>
@@ -143,6 +148,7 @@ export default {
             projectName: '',
             project: {},
             updateNameError: '',
+            updateContractError: '',
             contractAddress: ''
         }
     },
@@ -166,38 +172,21 @@ export default {
     },
     methods: {
         async getProject () {
-            // const response = await axios.get(`/api/projects/get-project/${this.address}?id=${this.projectId}`)
-            this.projectName = 'test'
-            this.project = {
-                name: 'test',
-                status: true,
-                createdAt: moment(new Date()).format('DD MMMM YYYY'),
-                id: '123',
-                requestToday: 0,
-                totalRequests: 1000,
-                contractAddresses: [
-                    '1',
-                    '2'
-                ]
+            const response = await axios.get(`/api/projects/get-project/${this.address}?id=${this.projectId}`)
+            if (response.data && response.data.project) {
+                const p = response.data.project
+                this.projectName = p.name
+                this.project = {
+                    name: p.name,
+                    status: p.status,
+                    createdAt: moment(p.createdAt).format('DD MMMM YYYY'),
+                    id: p.id,
+                    secret: p.keys.secret,
+                    requestToday: 0,
+                    totalRequests: 1000,
+                    contractAddresses: p.addresses.watch_smart_contracts || []
+                }
             }
-            // if (response.data && response.data.items) {
-            //     response.data.items.map(p => {
-            //         console.log(p)
-            //         this.projectName = p.name
-            //         this.project = {
-            //             name: p.name,
-            //             status: p.status,
-            //             createdAt: moment(p.createdAt).format('DD MMMM YYYY'),
-            //             id: p._id,
-            //             requestToday: 0,
-            //             totalRequests: 1000,
-            //             contractAddresses: [
-            //                 '1',
-            //                 '2'
-            //             ]
-            //         }
-            //     })
-            // }
         },
         confirmDelete () {
             this.$refs.deleteProjectModal.show()
@@ -206,16 +195,17 @@ export default {
             if (!this.projectName) {
                 this.updateNameError = 'Required field'
             } else {
+                const project = {}
+                project.name = this.projectName
                 axios.post(
                     '/api/projects/update-project',
                     {
                         owner: this.address,
                         id: this.projectId,
-                        name: this.project.name,
-                        newName: this.projectName
+                        project
                     }
                 ).then(response => {
-                    if (response.data && response.data.name === this.projectName) {
+                    if (response.data && response.data.success) {
                         this.updateNameError = ''
                         this.$toasted.show('Updated project', { position: 'top-center', type: 'success' })
                     }
@@ -226,6 +216,76 @@ export default {
                     }
                 })
             }
+        },
+        async updateContractAddress () {
+            if (!this.contractAddress) {
+                this.updateContractError = 'Required field'
+            } else {
+                const project = {
+                    addresses: {
+                        watch_smart_contracts: this.project.contractAddresses || []
+                    }
+                }
+
+                project.addresses.watch_smart_contracts.push(this.contractAddress)
+
+                axios.post(
+                    '/api/projects/update-project',
+                    {
+                        owner: this.address,
+                        id: this.projectId,
+                        project
+                    }
+                ).then(response => {
+                    if (response.data && response.data.success) {
+                        this.contractAddress = ''
+                        this.updateContractError = ''
+                        this.$toasted.show('Updated project', { position: 'top-center', type: 'success' })
+                    }
+                }).catch(error => {
+                    if (error.response) {
+                        this.contractAddress = ''
+                        const data = error.response.data || {}
+                        this.updateContractError = data.error ? data.error.message : data.error
+                    }
+                })
+            }
+        },
+        async removeContractAddress (index) {
+            const project = {
+                addresses: {
+                    watch_smart_contracts: this.project.contractAddresses.filter((p, i) => {
+                        if (i !== index) {
+                            return p
+                        }
+                    })
+                }
+            }
+            this.project.contractAddresses = this.project.contractAddresses.filter((p, i) => {
+                if (i !== index) {
+                    return p
+                }
+            })
+            axios.post(
+                '/api/projects/update-project',
+                {
+                    owner: this.address,
+                    id: this.projectId,
+                    project
+                }
+            ).then(response => {
+                if (response.data && response.data.success) {
+                    this.contractAddress = ''
+                    this.updateContractError = ''
+                    this.$toasted.show('Updated project', { position: 'top-center', type: 'success' })
+                }
+            }).catch(error => {
+                if (error.response) {
+                    this.contractAddress = ''
+                    const data = error.response.data || {}
+                    this.updateContractError = data.error ? data.error.message : data.error
+                }
+            })
         }
     }
 }
