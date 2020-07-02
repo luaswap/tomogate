@@ -181,7 +181,7 @@ export default {
                     status: p.status,
                     createdAt: moment(p.createdAt).format('DD MMMM YYYY'),
                     id: p.id,
-                    secret: p.keys.secret,
+                    secret: p.secret,
                     requestToday: 0,
                     totalRequests: 1000,
                     contractAddresses: p.addresses.watch_smart_contracts || []

@@ -9,7 +9,7 @@ message Project {
 	string id = 1;
 	string name = 2;
 	string user = 3;
-	Keys keys = 4;
+	string secret = 4;
 	Addresses addresses = 5;
 	Security security = 6;
 	Notification notification = 7;
@@ -19,11 +19,6 @@ message Project {
 
 message CreateRequest {
 	string name = 1;
-}
-
-message Keys {
-	string    id = 1;
-	string secret = 2;
 }
 
 message Security {
@@ -45,7 +40,7 @@ message CreateResponse {
 	string id = 1;
 	string name = 2;
 	string user = 3;
-	Keys keys = 4;
+	string secret = 4;
 }
 
 message ListRequest {
