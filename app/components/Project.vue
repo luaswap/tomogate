@@ -90,6 +90,70 @@
                                     @click="removeContractAddress(index)">REMOVE</b-button>
                             </li>
                         </b-card>
+                        <b-card class="h-100">
+                            <span>ALLOWLIST DOMAINS <i class="tb-info" /></span>
+                            <b-form-group>
+                                <b-input-group
+                                    size="md"
+                                    class="mt-3"
+                                    label="Name">
+                                    <b-form-input
+                                        v-model="domainUrl"
+                                        placeholder="Allow address"
+                                        type="text"/>
+                                    <b-input-group-append>
+                                        <b-button
+                                            variant="outline-primary"
+                                            @click="updateDomainList">Add</b-button>
+                                    </b-input-group-append>
+                                </b-input-group>
+                                <div
+                                    v-if="updateDomainUrlError"
+                                    class="text-error pt-2">{{ updateDomainUrlError }}</div>
+                            </b-form-group>
+                            <li
+                                v-for="(item, index) in project.domains"
+                                :key="index"
+                                class="d-flex pt-1 align-items-center justify-content-between ">
+                                <div>{{ item }}</div>
+                                <b-button
+                                    variant="link"
+                                    class="remove-btn"
+                                    @click="removeSecurity(index, 'domain')">REMOVE</b-button>
+                            </li>
+                        </b-card>
+                        <b-card class="h-100">
+                            <span>ALLOWLIST IP ADDRESSES <i class="tb-info" /></span>
+                            <b-form-group>
+                                <b-input-group
+                                    size="md"
+                                    class="mt-3"
+                                    label="Name">
+                                    <b-form-input
+                                        v-model="ipAddress"
+                                        placeholder="Allow address"
+                                        type="text"/>
+                                    <b-input-group-append>
+                                        <b-button
+                                            variant="outline-primary"
+                                            @click="updateIPList">Add</b-button>
+                                    </b-input-group-append>
+                                </b-input-group>
+                                <div
+                                    v-if="updateIPListError"
+                                    class="text-error pt-2">{{ updateIPListError }}</div>
+                            </b-form-group>
+                            <li
+                                v-for="(item, index) in project.ips"
+                                :key="index"
+                                class="d-flex pt-1 align-items-center justify-content-between ">
+                                <div>{{ item }}</div>
+                                <b-button
+                                    variant="link"
+                                    class="remove-btn"
+                                    @click="removeSecurity(index, 'ip')">REMOVE</b-button>
+                            </li>
+                        </b-card>
                     </div>
 
                     <div>
@@ -149,7 +213,11 @@ export default {
             project: {},
             updateNameError: '',
             updateContractError: '',
-            contractAddress: ''
+            contractAddress: '',
+            domainUrl: '',
+            updateDomainUrlError: '',
+            ipAddress: '',
+            updateIPListError: ''
         }
     },
     validations: {
@@ -184,7 +252,9 @@ export default {
                     secret: p.secret,
                     requestToday: 0,
                     totalRequests: 1000,
-                    contractAddresses: p.addresses.watch_smart_contracts || []
+                    contractAddresses: p.addresses.watch_smart_contracts || [],
+                    domains: p.security.white_list_domains || [],
+                    ips: p.security.white_list_ips || []
                 }
             }
         },
@@ -251,6 +321,76 @@ export default {
                 })
             }
         },
+        async updateDomainList () {
+            if (!this.domainUrl) {
+                this.updateDomainUrlError = 'Required field'
+            } else {
+                const project = {
+                    security: {
+                        white_list_domains: this.project.domains || [],
+                        white_list_ips: this.project.ips || []
+                    }
+                }
+
+                project.security.white_list_domains.push(this.domainUrl)
+
+                axios.post(
+                    '/api/projects/update-project',
+                    {
+                        owner: this.address,
+                        id: this.projectId,
+                        project
+                    }
+                ).then(response => {
+                    if (response.data && response.data.success) {
+                        this.domainUrl = ''
+                        this.updateDomainUrlError = ''
+                        this.$toasted.show('Updated project', { position: 'top-center', type: 'success' })
+                    }
+                }).catch(error => {
+                    if (error.response) {
+                        this.domainUrl = ''
+                        const data = error.response.data || {}
+                        this.updateDomainUrlError = data.error ? data.error.message : data.error
+                    }
+                })
+            }
+        },
+        async updateIPList () {
+            if (!this.ipAddress) {
+                this.updateIPListError = 'Required field'
+            } else {
+                const project = {
+                    security: {
+                        white_list_domains: this.project.domains || [],
+                        white_list_ips: this.project.ips || []
+                    }
+                }
+
+                project.security.white_list_ips.push(this.ipAddress)
+
+                axios.post(
+                    '/api/projects/update-project',
+                    {
+                        owner: this.address,
+                        id: this.projectId,
+                        project
+                    }
+                ).then(response => {
+                    if (response.data && response.data.success) {
+                        this.ipAddress = ''
+                        this.updateIPListError = ''
+                        this.$toasted.show('Updated project', { position: 'top-center', type: 'success' })
+                    }
+                }).catch(error => {
+                    if (error.response) {
+                        this.ipAddress = ''
+                        const data = error.response.data || {}
+                        this.updateIPListError = data.error ? data.error.message : data.error
+                    }
+                })
+            }
+        },
         async removeContractAddress (index) {
             const project = {
                 addresses: {
@@ -275,15 +415,67 @@ export default {
                 }
             ).then(response => {
                 if (response.data && response.data.success) {
-                    this.contractAddress = ''
-                    this.updateContractError = ''
                     this.$toasted.show('Updated project', { position: 'top-center', type: 'success' })
                 }
             }).catch(error => {
                 if (error.response) {
-                    this.contractAddress = ''
                     const data = error.response.data || {}
                     this.updateContractError = data.error ? data.error.message : data.error
+                }
+            })
+        },
+        async removeSecurity (index, field) {
+            const project = {
+                security: {
+                    white_list_domains: this.project.domains || [],
+                    white_list_ips: this.project.ips || []
+                }
+            }
+            switch (field) {
+            case 'domain':
+                project.security.white_list_domains =
+                    this.project.domains.filter((p, i) => {
+                        if (i !== index) {
+                            return p
+                        }
+                    })
+                this.project.domains = this.project.domains.filter((p, i) => {
+                    if (i !== index) {
+                        return p
+                    }
+                })
+                break
+            case 'ip':
+                project.security.white_list_ips =
+                    this.project.ips.filter((p, i) => {
+                        if (i !== index) {
+                            return p
+                        }
+                    })
+                this.project.ips = this.project.ips.filter((p, i) => {
+                    if (i !== index) {
+                        return p
+                    }
+                })
+                break
+            default:
+                break
+            }
+            axios.post(
+                '/api/projects/update-project',
+                {
+                    owner: this.address,
+                    id: this.projectId,
+                    project
+                }
+            ).then(response => {
+                if (response.data && response.data.success) {
+                    this.$toasted.show('Updated project', { position: 'top-center', type: 'success' })
+                }
+            }).catch(error => {
+                if (error.response) {
+                    const data = error.response.data || {}
+                    this.updateIPListError = data.error ? data.error.message : data.error
                 }
             })
         }

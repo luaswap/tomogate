@@ -51,7 +51,7 @@ router.get('/get-project/:owner', [
                     if (err) {
                         const error = grpcError.deserializeGoogleGrpcStatusDetails(err)
                         if (!error) {
-                            return next(new Error(error.details))
+                            return next(new Error(err.details))
                         } else {
                             return next(new Error(error.details[0].array))
                         }
@@ -88,9 +88,10 @@ router.post('/new-project', [
             metadata,
             async (err, response) => {
                 if (err) {
+                    console.log(err)
                     const error = grpcError.deserializeGoogleGrpcStatusDetails(err)
                     if (!error) {
-                        return next(new Error(error.details))
+                        return next(new Error(err.details))
                     } else {
                         return next(new Error(error.details[0].array))
                     }
