@@ -1,5 +1,5 @@
 <template>
-    <div class="pt-4 site-wrapper has-side-nav d-flex">
+    <div class="pt-4 site-wrapper has-side-nav d-flex mb-5">
         <div class="container">
             <header
                 class="d-flex justify-content-between pb-4 align-items-center">
@@ -106,7 +106,8 @@ export default {
     created: async function () {
         const storage = this.getStorage('account') || {}
 
-        this.address = storage.address || this.$store.state.address || await this.getAccount()
+        this.address = storage.address || this.$store.state.address
+
         if (this.address) {
             await this.getProjects()
         } else {
@@ -123,7 +124,7 @@ export default {
                         items.push({
                             name: p.name,
                             status: p.status,
-                            createdAt: moment(p.created_at).format('DD MMM YYYY'),
+                            createdAt: moment(p.created_at * 1000).format('DD MMM YYYY'),
                             id: p.id,
                             requestToday: 0,
                             totalRequests: 1000
@@ -135,6 +136,7 @@ export default {
                 if (error.response && error.response.data) {
                     const err = error.response.data.error || {}
                     this.$toasted.show(err.message ? err.message : err, { type: 'error' })
+                    this.$router.push({ path: '/' })
                 } else {
                     this.$toasted.show('Something went wrong', { type: 'error' })
                 }

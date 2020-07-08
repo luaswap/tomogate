@@ -20,54 +20,52 @@ router.get('/', [
         const page = req.query.page >= 1 ? req.query.page - 1 : 0 || 0
         const limit = parseInt(req.query.limit / 2) || 100
         const coin = req.query.coin || 'btc'
-        // let response = {
-        //     mainTxs: [],
-        //     wrapTxs: [],
-        //     total: 0
-        // }
+        let response = {
+            mainTxs: [],
+            wrapTxs: [],
+            total: 0
+        }
 
         const url = urljoin(
-            // config.get('serverAPI'),
-            'https://bridge.tomochain.com/api',
+            config.get('serverAPI'),
             '/transactions',
             `?coin=${coin}&page=${page}&limit=${limit}`
         )
         const result = await axios.get(url)
-        return res.send(result.data)
-        // if (result && result.data) {
-        //     response.total = result.data.Total
-        //     await Promise.all(result.data.Data.map(item => {
-        //         if (item.InTx.Status === 'DEPOSITED') {
-        //             response.mainTxs.push(Object.assign(
-        //                 item.InTx,
-        //                 {
-        //                     CreatedAt: item.CreatedAt
-        //                 }
-        //             ))
-        //             response.wrapTxs.push(Object.assign(
-        //                 item.OutTx,
-        //                 {
-        //                     CreatedAt: item.CreatedAt
-        //                 }
-        //             ))
-        //         }
-        //         if (item.InTx.Status === 'BURNED') {
-        //             response.mainTxs.push(Object.assign(
-        //                 item.OutTx,
-        //                 {
-        //                     CreatedAt: item.CreatedAt
-        //                 }
-        //             ))
-        //             response.wrapTxs.push(Object.assign(
-        //                 item.InTx,
-        //                 {
-        //                     CreatedAt: item.CreatedAt
-        //                 }
-        //             ))
-        //         }
-        //     }))
-        // }
-        // return res.send(response)
+        if (result && result.data) {
+            response.total = result.data.Total
+            await Promise.all(result.data.Data.map(item => {
+                if (item.InTx.Status === 'DEPOSITED') {
+                    response.mainTxs.push(Object.assign(
+                        item.InTx,
+                        {
+                            CreatedAt: item.CreatedAt
+                        }
+                    ))
+                    response.wrapTxs.push(Object.assign(
+                        item.OutTx,
+                        {
+                            CreatedAt: item.CreatedAt
+                        }
+                    ))
+                }
+                if (item.InTx.Status === 'BURNED') {
+                    response.mainTxs.push(Object.assign(
+                        item.OutTx,
+                        {
+                            CreatedAt: item.CreatedAt
+                        }
+                    ))
+                    response.wrapTxs.push(Object.assign(
+                        item.InTx,
+                        {
+                            CreatedAt: item.CreatedAt
+                        }
+                    ))
+                }
+            }))
+        }
+        return res.send(response)
     } catch (error) {
         return next(error)
     }

@@ -1,5 +1,5 @@
 <template>
-    <div class="mt-3 site-wrapper has-side-nav d-flex">
+    <div class="mt-3 site-wrapper has-side-nav d-flex mb-5">
         <b-tabs
             content-class="">
             <b-tab
@@ -71,7 +71,7 @@
                                         type="text"/>
                                     <b-input-group-append>
                                         <b-button
-                                            variant="outline-primary"
+                                            variant="outline-success"
                                             @click="updateContractAddress">Add</b-button>
                                     </b-input-group-append>
                                 </b-input-group>
@@ -103,7 +103,7 @@
                                         type="text"/>
                                     <b-input-group-append>
                                         <b-button
-                                            variant="outline-primary"
+                                            variant="outline-success"
                                             @click="updateDomainList">Add</b-button>
                                     </b-input-group-append>
                                 </b-input-group>
@@ -135,7 +135,7 @@
                                         type="text"/>
                                     <b-input-group-append>
                                         <b-button
-                                            variant="outline-primary"
+                                            variant="outline-success"
                                             @click="updateIPList">Add</b-button>
                                     </b-input-group-append>
                                 </b-input-group>
@@ -231,7 +231,7 @@ export default {
     created: async function () {
         const storage = this.getStorage('account') || {}
 
-        this.address = storage.address || this.$store.state.address || await this.getAccount()
+        this.address = storage.address || this.$store.state.address
         if (this.address) {
             await this.getProject()
         } else {
